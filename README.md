@@ -1,5 +1,7 @@
 # 🌍 Immigration Decision Support System
 
+![CI](https://github.com/rrsec5/immigration-decision-support-system/actions/workflows/ci.yml/badge.svg)
+
 A comprehensive, microservice-based Decision Support System (DSS) designed to help individuals choose the ideal country for immigration. The platform evaluates countries across multiple 10-point metrics and generates highly personalized recommendations based on detailed user questionnaires.
 
 ## 📺 Project Walkthrough
@@ -55,6 +57,10 @@ The backend is built using a scalable **Microservices Architecture** comprising 
 ```
 Immigration-Decision-Support-System
 │
+├── .github
+│   └── workflows
+│       └── ci.yml
+│
 ├── backend
 │   │
 │   ├── api-gateway
@@ -63,15 +69,16 @@ Immigration-Decision-Support-System
 │   ├── recommendation-service
 │   └── user-service
 │
-├── frontend
-│   └── React + TypeScript application
-│
 ├── database
 │   └── database.sql
 │
-├── docker-compose.yml
-├── .env
-└── README.md
+├── frontend
+│   └── React + TypeScript application
+│
+├── .env.example 
+├── .gitignore
+├── README.md
+└── compose.yml
 ```
 
 ## 🐳 Running the Project with Docker
@@ -125,7 +132,7 @@ The `.env.example` file contains only template values required to start the proj
 Run the following command from the project root directory:
 
 ```bash
-docker compose up
+docker compose up --build
 ```
 
 Docker will:
@@ -148,6 +155,31 @@ Stop application:
 ```
 docker compose down
 ```
+
+## ⚙️ Continuous Integration
+
+The project uses **GitHub Actions** for automated continuous integration.
+
+The CI pipeline is triggered on:
+- pushes to the `main` branch;
+- pull requests targeting the `main` branch.
+
+Each workflow run performs the following checks:
+
+- **Backend verification**
+  - sets up Java 17 environment;
+  - starts a MySQL service for database testing;
+  - initializes database schema from `database/database.sql`;
+  - builds all Spring Boot microservices using Maven;
+  - runs automated tests.
+
+- **Frontend verification**
+  - sets up Node.js environment;
+  - installs dependencies using `pnpm`;
+  - builds the React + TypeScript application.
+
+- **Docker validation**
+  - builds all application images using Docker Compose.
 
 ---
 
