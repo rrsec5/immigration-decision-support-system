@@ -1,0 +1,146 @@
+name: immigration_decision_support
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: immigration-mysql
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/database.sql:/docker-entrypoint-initdb.d/database.sql
+
+    restart: unless-stopped
+
+  eureka-service:
+    build: ./backend/eureka-service
+
+    container_name: eureka-service
+
+    ports:
+      - "8761:8761"
+
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8761"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+    restart: unless-stopped
+
+  api-gateway:
+    build: ./backend/api-gateway
+
+    container_name: api-gateway
+
+    environment:
+      EUREKA_URL: ${EUREKA_URL}
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      eureka-service:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+  user-service:
+    build: ./backend/user-service
+
+    container_name: user-service
+
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/${DB_NAME}
+      DB_USERNAME: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      EUREKA_URL: ${EUREKA_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+
+    ports:
+      - "8081:8081"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+      eureka-service:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+  country-service:
+    build: ./backend/country-service
+
+    container_name: country-service
+
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/${DB_NAME}
+      DB_USERNAME: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      EUREKA_URL: ${EUREKA_URL}
+
+    ports:
+      - "8082:8082"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+  recommendation-service:
+    build: ./backend/recommendation-service
+
+    container_name: recommendation-service
+
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/${DB_NAME}
+      DB_USERNAME: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      EUREKA_URL: ${EUREKA_URL}
+
+    ports:
+      - "8083:8083"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+
+    container_name: frontend
+
+    ports:
+      - "3000:80"
+
+    depends_on:
+      api-gateway:
+        condition: service_started
+
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
