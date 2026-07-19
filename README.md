@@ -36,10 +36,11 @@ The backend is built using a scalable **Microservices Architecture** comprising 
 
 ### **Backend (Microservices)**
 
-- **Core:** Java, Spring Boot, Spring Web
-- **Cloud & Routing:** Spring Cloud Netflix Eureka (Service Registry), Spring Cloud Routing (API Gateway), OpenFeign (Inter-service communication)
+- **Core:** Java 17, Spring Boot, Spring Web
+- **Microservices & Communication:** Spring Cloud Netflix Eureka (Service Registry), Spring Cloud Routing (API Gateway), OpenFeign (Inter-service communication)
 - **Data Layer:** Spring Data JPA, MySQL Driver
 - **Database:** MySQL
+- **Security and Authentication:** Spring Security, JWT Authentication
 
 ### **Frontend (Client)**
 
@@ -51,18 +52,61 @@ The backend is built using a scalable **Microservices Architecture** comprising 
 
 ## 📂 Repository Structure
 
-The project is organized into three main directories:
+```
+Immigration-Decision-Support-System
+│
+├── backend
+│   │
+│   ├── api-gateway
+│   ├── country-service
+│   ├── eureka-service
+│   ├── recommendation-service
+│   └── user-service
+│
+├── frontend
+│   └── React + TypeScript application
+│
+├── database
+│   └── database.sql
+│
+├── docker-compose.yml
+├── .env
+└── README.md
+```
 
-- `/DataBase` — Contains SQL scripts for database schema creation and initial seeding.
-- `/immigration-decision-support` — The Java Spring Boot backend microservices.
-- `/immigration-decision-support-frontend` — The responsive React client application.
+## 🐳 Running the Project with Docker
 
-## ⚙️ Quick Start
+The entire application can be started using Docker Compose.
 
-1. Run the SQL scripts in the `/DataBase` folder to set up your **MySQL** instance.
-2. Configure and start the `eureka-service` and `api-gateway`.
-3. Launch the core backend microservices (`user`, `country`, `recommendation`).
-4. Navigate to the frontend directory, install dependencies via `npm install`, and run `npm run dev`.
+### Requirements
+
+Install:
+
+- Docker Desktop
+- Git
+
+### 1. Clone repository
+
+```bash
+git clone <repository-url>
+cd Immigration-Decision-Support-System
+```
+
+### 2. Start the Application
+
+Run the following command from the project root directory:
+
+```bash
+docker compose up --build
+```
+
+Docker will automatically build and start everything.
+
+After successful startup, open:
+
+```
+http://localhost:3000
+```
 
 ---
 
