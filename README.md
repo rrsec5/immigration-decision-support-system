@@ -88,24 +88,65 @@ Install:
 ### 1. Clone repository
 
 ```bash
-git clone <repository-url>
-cd Immigration-Decision-Support-System
+git clone https://github.com/rrsec5/immigration-decision-support-system.git
+cd immigration-decision-support-system
 ```
 
-### 2. Start the Application
+### 2. Configure environment variables
+
+Create your local environment file:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and configure required values.
+
+Example:
+
+```bash
+DB_NAME=immigration_decision_support
+
+MYSQL_ROOT_PASSWORD=your_password
+
+DB_USER=app_user
+DB_PASSWORD=your_password
+
+JWT_SECRET=your_secret_key
+JWT_EXPIRATION=86400000
+```
+
+Do not commit `.env` to the repository.
+
+The `.env.example` file contains only template values required to start the project.
+
+### 3. Start the Application
 
 Run the following command from the project root directory:
 
 ```bash
-docker compose up --build
+docker compose up
 ```
 
-Docker will automatically build and start everything.
+Docker will:
+
+- build all application containers
+- create the MySQL database
+- start backend services
+- start frontend application
+
+### 4. Access the application
 
 After successful startup, open:
 
 ```
 http://localhost:3000
+```
+
+Stop application:
+
+```
+docker compose down
 ```
 
 ---
