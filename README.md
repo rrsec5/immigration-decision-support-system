@@ -7,6 +7,8 @@ A comprehensive, microservice-based Decision Support System (DSS) designed to he
 You can watch the full demonstration of the system's features and architecture on YouTube:
 👉 **[Watch Project Presentation on YouTube](https://youtu.be/B0ZciVTedco)**
 
+---
+
 ## 🚀 Key Features
 
 ### 👤 Guest Features
@@ -22,6 +24,8 @@ You can watch the full demonstration of the system's features and architecture o
 - **Profile Management:** Full control over personal data and questionnaire responses with the ability to update metrics at any time.
 - **Interactive Reviews:** Only registered users can submit text reviews and 10-point ratings for specific countries.
 
+---
+
 ## 🏗️ System Architecture
 
 The backend is built using a scalable **Microservices Architecture** comprising 3 core business services and 2 infrastructure components:
@@ -31,6 +35,8 @@ The backend is built using a scalable **Microservices Architecture** comprising 
 - **`recommendation-service`:** Runs the decision-making algorithm based on user survey inputs.
 - **`eureka-service`:** Service registry for dynamic discovery.
 - **`api-gateway`:** Centralized routing and request handling.
+
+---
 
 ## 🛠️ Tech Stack
 
@@ -49,6 +55,8 @@ The backend is built using a scalable **Microservices Architecture** comprising 
 - **Navigation & Forms:** `react-router-dom`, `react-hook-form` (with validation)
 - **UI Components:** `sonner` (Toast notifications), `react-icons`, `flag-icons` (Dynamic country flags representation)
 - **API Client:** Axios
+
+---
 
 ## 📂 Repository Structure
 
@@ -73,6 +81,65 @@ Immigration-Decision-Support-System
 ├── .env
 └── README.md
 ```
+
+---
+
+## 🧪 Testing
+
+The project includes unit testing for the main business services across all backend microservices.
+
+The tests were created using **JUnit 5** and **Mockito** to verify core application logic, service behavior, and different business scenarios without relying on external dependencies.
+
+Currently implemented tests cover:
+
+### `user-service`
+
+- **AuthService**
+  - Successful user registration
+  - Registration with an already existing email
+  - Successful login
+  - Login with invalid credentials
+
+- **UserService**
+  - Saving user profile data
+  - Handling missing users and invalid reference data
+
+- **JwtService**
+  - JWT token generation and username extraction
+  - Token validation
+
+- **ReferenceService**
+  - Loading available reference data (languages, professions, financial levels)
+
+### `country-service`
+
+- **CountryService**
+  - Retrieving country information
+  - Country filtering and sorting logic
+  - Handling missing countries
+
+- **ReviewService**
+  - Creating reviews
+  - Calculating average ratings
+  - Review retrieval logic
+
+### `recommendation-service`
+
+- **RecommendationCalculator**
+  - Language scoring
+  - Profession scoring
+  - Salary and financial cushion calculations
+  - Climate, region, and migration preference scoring
+  - Full recommendation score calculation
+
+- **RecommendationService**
+  - Creating recommendation sessions
+  - Handling incomplete user profiles
+  - Retrieving recommendation sessions
+
+In total, the project contains **30+ backend tests** covering the main business scenarios of the application.
+
+---
 
 ## 🐳 Running the Project with Docker
 
