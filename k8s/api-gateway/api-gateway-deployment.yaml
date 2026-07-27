@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: api-gateway
+  namespace: immigration-support-system
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: api-gateway
+
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+
+    spec:
+      containers:
+        - name: api-gateway
+
+          image: rrsec5/api-gateway:1.0
+
+          ports:
+            - containerPort: 8080
+
+          env:
+            - name: EUREKA_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: immigration-support-system-config
+                  key: EUREKA_URL
+
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 8080
+
+          #   initialDelaySeconds: 40
+          #   periodSeconds: 10
+
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 8080
+
+          #   initialDelaySeconds: 60
+          #   periodSeconds: 20

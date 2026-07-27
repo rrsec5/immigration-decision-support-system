@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: immigration-support-system-config
+  namespace: immigration-support-system
+
+data:
+  DB_NAME: immigration_decision_support
+  DB_USER: app_user
+
+  DB_URL: jdbc:mysql://mysql:3306/immigration_decision_support
+
+  MYSQL_HOST: mysql
+  MYSQL_PORT: "3306"
+
+  EUREKA_URL: http://eureka-service:8761/eureka
+
+  SPRING_PROFILES_ACTIVE: docker
+
+  JWT_EXPIRATION: "86400000"
