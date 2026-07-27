@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: eureka
+  namespace: immigration-support-system
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: eureka-service
+
+  template:
+    metadata:
+      labels:
+        app: eureka-service
+
+    spec:
+      containers:
+        - name: eureka-service
+
+          image: rrsec5/eureka-service:1.0
+
+          ports:
+            - containerPort: 8761
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8761
+
+            initialDelaySeconds: 20
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8761
+
+            initialDelaySeconds: 40
+            periodSeconds: 20

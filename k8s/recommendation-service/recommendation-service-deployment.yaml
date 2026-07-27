@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: recommendation-service
+  namespace: immigration-support-system
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: recommendation-service
+
+  template:
+    metadata:
+      labels:
+        app: recommendation-service
+
+    spec:
+      containers:
+        - name: recommendation-service
+
+          image: rrsec5/recommendation-service:1.0
+
+          ports:
+            - containerPort: 8083
+
+          env:
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: immigration-support-system-config
+                  key: DB_URL
+
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: immigration-support-system-config
+                  key: DB_USER
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: immigration-support-system-secret
+                  key: DB_PASSWORD
+
+            - name: EUREKA_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: immigration-support-system-config
+                  key: EUREKA_URL
+
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 8083
+
+          #   initialDelaySeconds: 40
+          #   periodSeconds: 10
+
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 8083
+
+          #   initialDelaySeconds: 60
+          #   periodSeconds: 20
