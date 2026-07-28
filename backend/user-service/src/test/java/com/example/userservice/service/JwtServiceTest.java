@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class JwtServiceTest {
 
     private JwtService jwtService;
+    private static final String TEST_SECRET = "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=";
 
     @BeforeEach
     void setUp() throws Exception {
@@ -26,7 +27,7 @@ public class JwtServiceTest {
 
         secret.set(
                 jwtService,
-                "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY="
+                TEST_SECRET
         );
 
         Field expiration =

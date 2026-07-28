@@ -16,12 +16,22 @@ spec:
     metadata:
       labels:
         app: recommendation-service
+        version: "1.1"
 
     spec:
       containers:
         - name: recommendation-service
+          image: rrsec5/recommendation-service:1.1
+          imagePullPolicy: IfNotPresent
 
-          image: rrsec5/recommendation-service:1.0
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+
+            limits:
+              cpu: 2000m
+              memory: 2Gi
 
           ports:
             - containerPort: 8083
@@ -51,18 +61,18 @@ spec:
                   name: immigration-support-system-config
                   key: EUREKA_URL
 
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 8083
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8083
 
-          #   initialDelaySeconds: 40
-          #   periodSeconds: 10
+            initialDelaySeconds: 40
+            periodSeconds: 10
 
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 8083
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8083
 
-          #   initialDelaySeconds: 60
-          #   periodSeconds: 20
+            initialDelaySeconds: 60
+            periodSeconds: 20

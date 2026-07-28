@@ -16,28 +16,38 @@ spec:
     metadata:
       labels:
         app: eureka-service
+        version: "1.1"
 
     spec:
       containers:
         - name: eureka-service
+          image: rrsec5/eureka-service:1.1
+          imagePullPolicy: IfNotPresent
 
-          image: rrsec5/eureka-service:1.0
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+
+            limits:
+              cpu: 300m
+              memory: 512Mi
 
           ports:
             - containerPort: 8761
 
           readinessProbe:
             httpGet:
-              path: /
+              path: /actuator/health/readiness
               port: 8761
 
-            initialDelaySeconds: 20
+            initialDelaySeconds: 40
             periodSeconds: 10
 
           livenessProbe:
             httpGet:
-              path: /
+              path: /actuator/health/liveness
               port: 8761
 
-            initialDelaySeconds: 40
+            initialDelaySeconds: 60
             periodSeconds: 20

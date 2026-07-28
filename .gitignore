@@ -3,6 +3,9 @@
 .env.*
 !.env.example
 
+# Kubernetes secrets
+k8s/secret.yaml
+
 #------------------------------------
 #             Backend
 #------------------------------------

@@ -16,12 +16,22 @@ spec:
     metadata:
       labels:
         app: api-gateway
+        version: "1.2"
 
     spec:
       containers:
         - name: api-gateway
+          image: rrsec5/api-gateway:1.2
+          imagePullPolicy: IfNotPresent
 
-          image: rrsec5/api-gateway:1.0
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+
+            limits:
+              cpu: 500m
+              memory: 1Gi
 
           ports:
             - containerPort: 8080
@@ -33,18 +43,18 @@ spec:
                   name: immigration-support-system-config
                   key: EUREKA_URL
 
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
 
-          #   initialDelaySeconds: 40
-          #   periodSeconds: 10
+            initialDelaySeconds: 40
+            periodSeconds: 10
 
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 8080
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
 
-          #   initialDelaySeconds: 60
-          #   periodSeconds: 20
+            initialDelaySeconds: 60
+            periodSeconds: 20

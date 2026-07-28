@@ -15,12 +15,22 @@ spec:
     metadata:
       labels:
         app: user-service
+        version: "1.2"
 
     spec:
       containers:
         - name: user-service
+          image: rrsec5/user-service:1.2
+          imagePullPolicy: IfNotPresent
 
-          image: rrsec5/user-service:1.0
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+
+            limits:
+              cpu: 2000m
+              memory: 2Gi
 
           ports:
             - containerPort: 8081
@@ -62,18 +72,18 @@ spec:
                   name: immigration-support-system-config
                   key: JWT_EXPIRATION
 
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 8081
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8081
 
-          #   initialDelaySeconds: 40
-          #   periodSeconds: 10
+            initialDelaySeconds: 40
+            periodSeconds: 10
 
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 8081
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8081
 
-          #   initialDelaySeconds: 60
-          #   periodSeconds: 20
+            initialDelaySeconds: 60
+            periodSeconds: 20

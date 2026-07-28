@@ -16,12 +16,22 @@ spec:
     metadata:
       labels:
         app: country-service
+        version: "1.1"
 
     spec:
       containers:
         - name: country-service
+          image: rrsec5/country-service:1.1
+          imagePullPolicy: IfNotPresent
 
-          image: rrsec5/country-service:1.0
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+
+            limits:
+              cpu: 2000m
+              memory: 2Gi
 
           ports:
             - containerPort: 8082
@@ -51,18 +61,26 @@ spec:
                   name: immigration-support-system-config
                   key: EUREKA_URL
 
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 8082
+          startupProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8082
 
-          #   initialDelaySeconds: 40
-          #   periodSeconds: 10
+            initialDelaySeconds: 20
+            failureThreshold: 12
+            periodSeconds: 10
 
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 8082
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8082
 
-          #   initialDelaySeconds: 60
-          #   periodSeconds: 20
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8082
+
+            initialDelaySeconds: 60
+            periodSeconds: 20
