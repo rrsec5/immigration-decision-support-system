@@ -16,12 +16,22 @@ spec:
     metadata:
       labels:
         app: frontend
+        version: "1.0"
 
     spec:
       containers:
         - name: frontend
-
           image: rrsec5/frontend:1.0
+          imagePullPolicy: IfNotPresent
+
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+
+            limits:
+              cpu: 200m
+              memory: 256Mi
 
           ports:
             - containerPort: 80
