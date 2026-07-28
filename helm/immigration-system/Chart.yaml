@@ -1,0 +1,11 @@
+apiVersion: v2
+
+name: immigration-system
+
+description: Helm chart for Immigration Decision Support System
+
+type: application
+
+version: 0.1.0
+
+appVersion: "1.0"

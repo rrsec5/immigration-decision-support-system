@@ -1,0 +1,14 @@
+# Global configuration
+namespace: immigration-support-system
+imagePullPolicy: IfNotPresent
+
+# Configuration
+config:
+  dbName: immigration_decision_support
+  dbUser: app_user
+  dbUrl: jdbc:mysql://mysql:3306/immigration_decision_support
+  mysqlHost: mysql
+  mysqlPort: "3306"
+  eurekaUrl: http://eureka-service:8761/eureka
+  springProfile: docker
+  jwtExpiration: "86400000"

@@ -1,0 +1,27 @@
+# Git
+
+.git
+.gitignore
+
+# IDE
+
+.idea
+.vscode
+
+# Documentation
+
+README.md
+
+# Local environment
+
+.env
+
+# Build artifacts
+
+target/
+node_modules/
+
+# Docker
+
+Dockerfile
+compose.yml
