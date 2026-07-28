@@ -1,0 +1,10 @@
+{{- if .Values.services.countryService.enabled }}
+
+{{ include "immigration-system.service" 
+(dict 
+"name" "country-service"
+"config" .Values.services.countryService
+"root" .
+) }}
+
+{{- end }}

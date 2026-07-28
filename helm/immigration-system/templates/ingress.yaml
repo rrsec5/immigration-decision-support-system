@@ -1,0 +1,37 @@
+{{- if .Values.ingress.enabled }}
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: immigration-ingress
+  namespace: {{ .Values.namespace }}
+
+  labels:
+    {{- include "immigration-system.labels" . | nindent 4 }}
+
+
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: {{ .Values.ingress.path.api.path }}
+            pathType: {{ .Values.ingress.path.api.pathType }}
+            backend:
+              service:
+                name: {{ .Values.ingress.path.api.service }}
+                port:
+                  number: {{ .Values.ingress.path.api.port }}
+
+          - path: {{ .Values.ingress.path.frontend.path }}
+            pathType: {{ .Values.ingress.path.frontend.pathType }}
+            backend:
+              service:
+                name: {{ .Values.ingress.path.frontend.service }}
+                port:
+                  number: {{ .Values.ingress.path.frontend.port }}
+
+{{- end }}

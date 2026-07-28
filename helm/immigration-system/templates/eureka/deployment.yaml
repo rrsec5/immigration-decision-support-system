@@ -1,0 +1,11 @@
+{{- if .Values.services.eureka.enabled }}
+
+{{ include "immigration-system.deployment"
+(dict
+"name" "eureka-service"
+"config" .Values.services.eureka
+"root" .
+)
+}}
+
+{{- end }}

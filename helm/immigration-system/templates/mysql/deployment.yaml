@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: mysql
+  namespace: {{ .Values.namespace }}
+
+  labels:
+    {{- include "immigration-system.labels" . | nindent 4 }}
+
+    app.kubernetes.io/component: mysql
+
+spec:
+  replicas: {{ .Values.mysql.replicas }}
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: mysql
+
+  template:
+    metadata:
+      labels:
+        {{- include "immigration-system.labels" . | nindent 8 }}
+        app.kubernetes.io/component: mysql
+
+    spec:
+      containers:
+        - name: mysql
+          image: "{{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.mysql.service.port }}
+          resources: {{- toYaml .Values.mysql.resources | nindent 12 }}
+
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: immigration-system-secret
+                  key: MYSQL_ROOT_PASSWORD
+
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: immigration-system-config
+                  key: DB_NAME
+
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: immigration-system-config
+                  key: DB_USER
+
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: immigration-system-secret
+                  key: DB_PASSWORD
+        
+          volumeMounts:
+
+            {{- if .Values.mysql.persistence.enabled }}
+
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+
+            {{- end }}
+
+            - name: mysql-init-script
+              mountPath: /docker-entrypoint-initdb.d
+
+      volumes:
+        {{- if .Values.mysql.persistence.enabled }}
+
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+
+        {{- end }}
+
+
+        - name: mysql-init-script
+          configMap:
+            name: mysql-init-script

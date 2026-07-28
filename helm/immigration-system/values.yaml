@@ -12,3 +12,353 @@ config:
   eurekaUrl: http://eureka-service:8761/eureka
   springProfile: docker
   jwtExpiration: "86400000"
+
+# MySQL
+mysql:
+  enabled: true
+
+  image:
+    repository: mysql
+    tag: "8.0"
+
+  replicas: 1
+
+  container:
+    port: 3306
+
+  service:
+    port: 3306
+    type: ClusterIP
+
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+
+    size: 5Gi
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+#Application
+services:
+  # Eureka
+  eureka:
+    enabled: true
+
+    replicas: 1
+
+    image:
+      repository: rrsec5/eureka-service
+      tag: "1.1"
+
+    service:
+      port: 8761
+      type: ClusterIP
+
+    container:
+      port: 8761
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: "1"
+        memory: 1Gi
+
+    probes:
+      readiness:
+        path: /actuator/health/readiness
+        initialDelaySeconds: 40
+        periodSeconds: 10
+      liveness:
+        path: /actuator/health/liveness
+        initialDelaySeconds: 60
+        periodSeconds: 20
+
+  #Api-Gateway
+  apiGateway:
+    enabled: true
+
+    replicas: 1
+
+    image:
+      repository: rrsec5/api-gateway
+      tag: "1.2"
+
+    container:
+      port: 8080
+
+    service:
+      port: 8080
+      type: ClusterIP
+
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+
+    env:
+      - name: EUREKA_URL
+        valueFrom:
+          configMapKeyRef:
+            name: immigration-system-config
+            key: EUREKA_URL
+
+    probes:
+      readiness:
+        path: /actuator/health/readiness
+        initialDelaySeconds: 40
+        periodSeconds: 10
+      liveness:
+        path: /actuator/health/liveness
+        initialDelaySeconds: 60
+        periodSeconds: 20
+
+  #User-service
+  userService:
+    enabled: true
+
+    replicas: 1
+
+    image:
+      repository: rrsec5/user-service
+      tag: "1.2"
+
+    container:
+      port: 8081
+
+    service:
+      port: 8081
+      type: ClusterIP
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: "2"
+        memory: 2Gi
+
+    env:
+      - name: DB_URL
+        valueFrom:
+          configMapKeyRef:
+            name: immigration-system-config
+            key: DB_URL
+
+      - name: DB_USERNAME
+        valueFrom:
+          configMapKeyRef:
+            name: immigration-system-config
+            key: DB_USER
+
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: immigration-system-secret
+            key: DB_PASSWORD
+
+      - name: EUREKA_URL
+        valueFrom:
+          configMapKeyRef:
+            name: immigration-system-config
+            key: EUREKA_URL
+
+      - name: JWT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: immigration-system-secret
+            key: JWT_SECRET
+
+      - name: JWT_EXPIRATION
+        valueFrom:
+          configMapKeyRef:
+            name: immigration-system-config
+            key: JWT_EXPIRATION
+
+    probes:
+      readiness:
+        path: /actuator/health/readiness
+        initialDelaySeconds: 40
+        periodSeconds: 10
+      liveness:
+        path: /actuator/health/liveness
+        initialDelaySeconds: 60
+        periodSeconds: 20
+
+  #Country-service
+  countryService:
+    enabled: true
+
+    replicas: 1
+
+    image:
+      repository: rrsec5/country-service
+      tag: "1.1"
+
+    container:
+      port: 8082
+
+    service:
+      port: 8082
+      type: ClusterIP
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: "2"
+        memory: 2Gi
+
+    env:
+      - name: DB_URL
+        valueFrom:
+          configMapKeyRef:
+            name: immigration-system-config
+            key: DB_URL
+
+      - name: DB_USERNAME
+        valueFrom:
+          configMapKeyRef:
+            name: immigration-system-config
+            key: DB_USER
+
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: immigration-system-secret
+            key: DB_PASSWORD
+
+      - name: EUREKA_URL
+        valueFrom:
+          configMapKeyRef:
+            name: immigration-system-config
+            key: EUREKA_URL
+
+    probes:
+      readiness:
+        path: /actuator/health/readiness
+        initialDelaySeconds: 40
+        periodSeconds: 10
+      liveness:
+        path: /actuator/health/liveness
+        initialDelaySeconds: 60
+        periodSeconds: 20
+
+  #Recommendation-service
+  recommendationService:
+    enabled: true
+
+    replicas: 1
+
+    image:
+      repository: rrsec5/recommendation-service
+      tag: "1.1"
+
+    container:
+      port: 8083
+
+    service:
+      port: 8083
+      type: ClusterIP
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: "2"
+        memory: 2Gi
+
+    env:
+      - name: DB_URL
+        valueFrom:
+          configMapKeyRef:
+            name: immigration-system-config
+            key: DB_URL
+
+      - name: DB_USERNAME
+        valueFrom:
+          configMapKeyRef:
+            name: immigration-system-config
+            key: DB_USER
+
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: immigration-system-secret
+            key: DB_PASSWORD
+
+      - name: EUREKA_URL
+        valueFrom:
+          configMapKeyRef:
+            name: immigration-system-config
+            key: EUREKA_URL
+
+    probes:
+      readiness:
+        path: /actuator/health/readiness
+        initialDelaySeconds: 40
+        periodSeconds: 10
+      liveness:
+        path: /actuator/health/liveness
+        initialDelaySeconds: 60
+        periodSeconds: 20
+
+#Frontend
+frontend:
+  enabled: true
+
+  replicas: 1
+
+  image:
+    repository: rrsec5/frontend
+    tag: "1.0"
+
+  container:
+    port: 80
+
+  service:
+    port: 80
+    type: ClusterIP
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+#Ingress
+ingress:
+  enabled: true
+
+  className: nginx
+
+  host: immigration.local
+
+  path:
+    api:
+      path: /api
+      pathType: Prefix
+      service: api-gateway
+      port: 8080
+
+    frontend:
+      path: /
+      pathType: Prefix
+      service: frontend
+      port: 80

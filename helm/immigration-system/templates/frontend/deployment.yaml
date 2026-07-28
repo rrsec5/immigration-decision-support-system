@@ -1,0 +1,11 @@
+{{- if .Values.frontend.enabled }}
+
+{{ include "immigration-system.deployment"
+(dict
+"name" "frontend"
+"config" .Values.frontend
+"root" .
+)
+}}
+
+{{- end }}

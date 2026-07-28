@@ -1,0 +1,10 @@
+{{- if .Values.services.apiGateway.enabled }}
+
+{{ include "immigration-system.service" 
+(dict 
+"name" "api-gateway"
+"config" .Values.services.apiGateway
+"root" .
+) }}
+
+{{- end }}
