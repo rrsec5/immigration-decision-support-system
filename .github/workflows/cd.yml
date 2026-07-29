@@ -6,7 +6,7 @@ permissions:
 on:
   push:
     branches:
-      - feat/add-complete-ci-cd-pipeline-with-k8s
+      - main
 
 jobs:
   deploy:
@@ -38,6 +38,19 @@ jobs:
           kubectl version --client
           helm version
 
+      - name: Install nginx ingress controller
+        run: |
+          kubectl apply \
+            -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+
+      - name: Wait for ingress controller
+        run: |
+          kubectl wait \
+            --namespace ingress-nginx \
+            --for=condition=ready pod \
+            --selector=app.kubernetes.io/component=controller \
+            --timeout=180s
+
       - name: Create namespace
         run: |
           kubectl create namespace immigration-support-system
@@ -64,7 +77,7 @@ jobs:
             -f helm/immigration-system/values-ci.yaml \
             -f helm/immigration-system/values-secret.example.yaml
 
-      - name: Wait for Kubernetes resources
+      - name: Wait for application pods
         run: |
           kubectl wait \
             --for=condition=ready pod \
@@ -72,7 +85,16 @@ jobs:
             --namespace immigration-support-system \
             --timeout=300s
 
-      - name: Verify deployment
+      - name: Verify pods/services/ingress
         run: |
           kubectl get pods -n immigration-support-system
           kubectl get services -n immigration-support-system
+          kubectl get ingress -n immigration-support-system
+
+      - name: Verify ingress controller
+        run: |
+          kubectl get pods \
+            --namespace ingress-nginx
+
+          kubectl get services \
+            --namespace ingress-nginx
