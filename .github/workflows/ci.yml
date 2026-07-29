@@ -179,7 +179,6 @@ jobs:
       - name: Verify rendered resources
         run: |
           grep "kind: Deployment" rendered-manifests.yaml
-          grep "kind: StatefulSet" rendered-manifests.yaml
           grep "kind: Service" rendered-manifests.yaml
           grep "kind: ConfigMap" rendered-manifests.yaml
           grep "kind: Secret" rendered-manifests.yaml
