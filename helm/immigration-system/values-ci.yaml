@@ -1,0 +1,30 @@
+services:
+  eureka:
+    image:
+      repository: rrsec5/eureka-service
+      tag: ci
+
+  apiGateway:
+    image:
+      repository: rrsec5/api-gateway
+      tag: ci
+
+  userService:
+    image:
+      repository: rrsec5/user-service
+      tag: ci
+
+  countryService:
+    image:
+      repository: rrsec5/country-service
+      tag: ci
+
+  recommendationService:
+    image:
+      repository: rrsec5/recommendation-service
+      tag: ci
+
+frontend:
+  image:
+    repository: rrsec5/frontend
+    tag: ci

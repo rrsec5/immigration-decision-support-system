@@ -35,6 +35,7 @@ services:
     restart: unless-stopped
 
   eureka-service:
+    image: rrsec5/eureka-service:ci
     build: ./backend/eureka-service
 
     container_name: eureka-service
@@ -51,6 +52,7 @@ services:
     restart: unless-stopped
 
   api-gateway:
+    image: rrsec5/api-gateway:ci
     build: ./backend/api-gateway
 
     container_name: api-gateway
@@ -82,6 +84,7 @@ services:
     restart: unless-stopped
 
   user-service:
+    image: rrsec5/user-service:ci
     build: ./backend/user-service
 
     container_name: user-service
@@ -107,6 +110,7 @@ services:
     restart: unless-stopped
 
   country-service:
+    image: rrsec5/country-service:ci
     build: ./backend/country-service
 
     container_name: country-service
@@ -129,6 +133,7 @@ services:
     restart: unless-stopped
 
   recommendation-service:
+    image: rrsec5/recommendation-service:ci
     build: ./backend/recommendation-service
 
     container_name: recommendation-service
@@ -151,6 +156,7 @@ services:
     restart: unless-stopped
 
   frontend:
+    image: rrsec5/frontend:ci
     build: ./frontend
 
     container_name: frontend

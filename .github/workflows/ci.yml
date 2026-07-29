@@ -68,6 +68,9 @@ jobs:
           DB_USERNAME: root
           DB_PASSWORD: root
 
+          JWT_SECRET: ChangeThisSecretValueToYourOwnJwtSecretWhichSizeIsMoreThan256Bits
+          JWT_EXPIRATION: 86400000
+
         run: mvn clean verify
 
   frontend:
@@ -113,6 +116,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Validate Docker Compose configuration
+        run: docker compose config
 
       - name: Build Docker images
         run: docker compose build
