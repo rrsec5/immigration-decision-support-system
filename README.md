@@ -1,6 +1,7 @@
 # 🌍 Immigration Decision Support System
 
-![CI](https://github.com/rrsec5/immigration-decision-support-system/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/rrsec5/immigration-decision-support-system/actions/workflows/ci.yml/badge.svg)](https://github.com/rrsec5/immigration-decision-support-system/actions/workflows/ci.yml) 
+[![CD](https://github.com/rrsec5/immigration-decision-support-system/actions/workflows/cd.yml/badge.svg)](https://github.com/rrsec5/immigration-decision-support-system/actions/workflows/cd.yml)
 
 A comprehensive, microservice-based Decision Support System (DSS) designed to help individuals choose the ideal country for immigration. The platform evaluates countries across multiple 10-point metrics and generates highly personalized recommendations based on detailed user questionnaires.
 
