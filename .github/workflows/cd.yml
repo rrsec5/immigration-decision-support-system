@@ -17,8 +17,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install Kind
+        run: |
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
+          chmod +x ./kind
+          sudo mv ./kind /usr/local/bin/kind
+
       - name: Create Kind cluster
-        uses: helm/kind-action@v1.10.0
+        run: |
+          kind create cluster --name immigration-cluster
+
+      - name: Check Kind cluster
+        run: |
+          kind get clusters
+          kubectl cluster-info
 
       - name: Verify Kubernetes tools
         run: |
@@ -36,12 +48,12 @@ jobs:
 
       - name: Load images into Kind
         run: |
-          kind load docker-image rrsec5/eureka-service:ci
-          kind load docker-image rrsec5/api-gateway:ci
-          kind load docker-image rrsec5/user-service:ci
-          kind load docker-image rrsec5/country-service:ci
-          kind load docker-image rrsec5/recommendation-service:ci
-          kind load docker-image rrsec5/frontend:ci
+          kind load docker-image rrsec5/eureka-service:ci --name immigration-cluster
+          kind load docker-image rrsec5/api-gateway:ci --name immigration-cluster
+          kind load docker-image rrsec5/user-service:ci --name immigration-cluster
+          kind load docker-image rrsec5/country-service:ci --name immigration-cluster
+          kind load docker-image rrsec5/recommendation-service:ci --name immigration-cluster
+          kind load docker-image rrsec5/frontend:ci --name immigration-cluster
 
       - name: Deploy with Helm
         run: |
