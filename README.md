@@ -300,7 +300,7 @@ Install:
 
 ```bash
 
-kind create cluster --config kind-config.yaml
+kind create cluster --name immigration-cluster
 
 ```
 
@@ -310,10 +310,13 @@ kind create cluster --config kind-config.yaml
 
 helm install immigration-system \
 helm/immigration-system \
+--namespace immigration-support-system \
+--create-namespace \
 -f helm/immigration-system/values.yaml \
 -f helm/immigration-system/values-secret.example.yaml
 
 ```
+> For production environments, replace `values-secret.example.yaml` with your own secret configuration file and never commit real credentials.
 
 After successful deployment, the application becomes available through the configured Ingress host.
 
