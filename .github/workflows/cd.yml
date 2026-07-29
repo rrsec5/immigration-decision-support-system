@@ -6,7 +6,7 @@ permissions:
 on:
   push:
     branches:
-      - main
+      - feat/add-complete-ci-cd-pipeline-with-k8s
 
 jobs:
   deploy:
