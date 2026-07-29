@@ -67,7 +67,8 @@ Immigration-Decision-Support-System
 │
 ├── .github
 │   └── workflows
-│       └── ci.yml
+│       ├── ci.yml
+│       └── cd.yml
 │
 ├── backend
 │   │
@@ -82,6 +83,14 @@ Immigration-Decision-Support-System
 │
 ├── frontend
 │   └── React + TypeScript application
+│
+├── helm 
+│   └── immigration-system 
+│       ├── files
+│       ├── templates
+│       ├── Chart.yaml 
+│       ├── values-secret.example.yaml 
+│       └── values.yaml 
 │
 ├── .env.example 
 ├── .gitignore
@@ -223,9 +232,100 @@ Stop application:
 docker compose down
 ```
 
+---
+
+## ☸️ Kubernetes Deployment with Helm
+
+The project is fully containerized and can be deployed to Kubernetes using a custom Helm chart.
+
+The Kubernetes infrastructure includes:
+
+- **Deployments and Services** for all application components:
+  - `api-gateway`
+  - `user-service`
+  - `country-service`
+  - `recommendation-service`
+  - `eureka-service`
+  - `frontend`
+  - `mysql`
+
+- **ConfigMap and Secrets** for centralized application configuration and sensitive data management.
+
+- **Ingress configuration** with NGINX Ingress Controller, allowing access to the application through a single entry point.
+
+- **Persistent Volume Claim (PVC)** for MySQL database persistence, preventing data loss after pod restarts.
+
+- **Resource management** using Kubernetes requests and limits to define CPU and memory requirements for each service.
+
+- **Health monitoring** using Spring Boot Actuator integrated with Kubernetes readiness and liveness probes.
+
+---
+
+## 📦 Helm Chart
+
+The Kubernetes deployment is packaged as a reusable **Helm chart**.
+
+The chart provides:
+
+- configurable application deployment through `values.yaml`;
+- separate secret management using `values-secret.yaml`;
+- reusable Helm templates to reduce Kubernetes manifest duplication;
+- common helper templates for labels, selectors, and health probes;
+- shared deployment and service templates for microservices;
+- custom MySQL deployment with persistent storage configuration.
+
+The entire application stack can be deployed using a single Helm command:
+
+```bash
+
+helm install immigration-system helm/immigration-system
+
+```
+
+---
+
+## 🚀 Running Kubernetes locally
+
+The project can be deployed locally using a Kubernetes cluster such as **Kind**.
+
+### Requirements
+
+Install:
+
+- Docker Desktop
+- Kind
+- Helm
+
+### 1. Create Kubernetes cluster
+
+```bash
+
+kind create cluster --config kind-config.yaml
+
+```
+
+### 2. Deploy application using Helm
+
+```bash
+
+helm install immigration-system \
+helm/immigration-system \
+-f helm/immigration-system/values.yaml \
+-f helm/immigration-system/values-secret.example.yaml
+
+```
+
+After successful deployment, the application becomes available through the configured Ingress host.
+
+Application images are stored in Docker Hub and referenced by Kubernetes deployments. The MySQL container uses the official MySQL Docker image.
+
+---
+
 ## ⚙️ Continuous Integration
 
-The project uses **GitHub Actions** for automated continuous integration.
+The project uses **GitHub Actions** to automate continuous integration and Kubernetes deployment workflows.
+
+### Continuous Integration (CI)
 
 The CI pipeline is triggered on:
 - pushes to the `main` branch;
@@ -248,6 +348,27 @@ Each workflow run performs the following checks:
 - **Docker validation**
   - builds all application images using Docker Compose.
 
+- **Helm validation**
+  - checks Helm chart correctness using `helm lint`;
+  - renders Kubernetes manifests using `helm template`;
+  - validates generated manifests using `kubeconform`.
+
+### Continuous Deployment (CD)
+
+The CD pipeline is implemented using **GitHub Actions** and performs automated Kubernetes deployment validation.
+
+The workflow:
+
+- creates a temporary Kubernetes cluster using Kind;
+- installs NGINX Ingress Controller;
+- builds application Docker images;
+- loads images into the Kubernetes cluster;
+- deploys the application stack using Helm;
+- waits for Kubernetes resources to become ready;
+- verifies pods, services, and ingress configuration.
+
+The CI/CD workflow results are available directly in the GitHub Actions section of the repository.
+
 ---
 
-_Developed as a complex architectural project combining data-driven decision algorithms, distributed microservices, and modern UI engineering._
+_Developed as a complex architectural project combining data-driven decision algorithms, microservices architecture, container orchestration with Kubernetes, Helm-based deployments, and automated CI/CD workflows._
