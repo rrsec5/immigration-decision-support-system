@@ -1,0 +1,99 @@
+name: CD
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Kind
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Kind
+        run: |
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
+          chmod +x ./kind
+          sudo mv ./kind /usr/local/bin/kind
+
+      - name: Create Kind cluster
+        run: |
+          kind create cluster --name immigration-cluster
+
+      - name: Check Kind cluster
+        run: |
+          kind get clusters
+          kubectl cluster-info
+
+      - name: Verify Kubernetes tools
+        run: |
+          kind version
+          kubectl version --client
+          helm version
+
+      - name: Install nginx ingress controller
+        run: |
+          kubectl apply \
+            -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+
+      - name: Wait for ingress controller
+        run: |
+          kubectl wait \
+            --namespace ingress-nginx \
+            --for=condition=available deployment/ingress-nginx-controller \
+            --timeout=180s
+
+      - name: Create namespace
+        run: |
+          kubectl create namespace immigration-support-system
+
+      - name: Build Docker images
+        run: |
+          docker compose build
+
+      - name: Load images into Kind
+        run: |
+          kind load docker-image rrsec5/eureka-service:ci --name immigration-cluster
+          kind load docker-image rrsec5/api-gateway:ci --name immigration-cluster
+          kind load docker-image rrsec5/user-service:ci --name immigration-cluster
+          kind load docker-image rrsec5/country-service:ci --name immigration-cluster
+          kind load docker-image rrsec5/recommendation-service:ci --name immigration-cluster
+          kind load docker-image rrsec5/frontend:ci --name immigration-cluster
+
+      - name: Deploy with Helm
+        run: |
+          helm install immigration-system \
+            helm/immigration-system \
+            --namespace immigration-support-system \
+            -f helm/immigration-system/values.yaml \
+            -f helm/immigration-system/values-ci.yaml \
+            -f helm/immigration-system/values-secret.example.yaml
+
+      - name: Wait for application pods
+        run: |
+          kubectl wait \
+            --for=condition=ready pod \
+            --all \
+            --namespace immigration-support-system \
+            --timeout=300s
+
+      - name: Verify pods/services/ingress
+        run: |
+          kubectl get pods -n immigration-support-system
+          kubectl get services -n immigration-support-system
+          kubectl get ingress -n immigration-support-system
+
+      - name: Verify ingress controller
+        run: |
+          kubectl get pods \
+            --namespace ingress-nginx
+
+          kubectl get services \
+            --namespace ingress-nginx
