@@ -122,3 +122,74 @@ jobs:
 
       - name: Build Docker images
         run: docker compose build
+
+  helm:
+    name: Helm Validation
+
+    runs-on: ubuntu-latest
+
+    needs:
+      - docker
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Verify Helm installation
+        run: helm version
+
+      - name: Lint Helm Chart
+        run: |
+          helm lint helm/immigration-system \
+            -f helm/immigration-system/values.yaml \
+            -f helm/immigration-system/values-ci.yaml \
+            -f helm/immigration-system/values-secret.example.yaml
+
+      - name: Render Kubernetes manifests
+        run: |
+          helm template immigration-system \
+            helm/immigration-system \
+            -f helm/immigration-system/values.yaml \
+            -f helm/immigration-system/values-ci.yaml \
+            -f helm/immigration-system/values-secret.example.yaml \
+            > rendered-manifests.yaml
+
+      - name: Upload rendered manifests
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-manifests
+          path: rendered-manifests.yaml
+
+      - name: Install kubeconform
+        run: |
+          curl -L https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz \
+            | tar xz
+          sudo mv kubeconform /usr/local/bin
+
+      - name: Validate Kubernetes manifests
+        run: |
+          kubeconform \
+            -strict \
+            -summary \
+            rendered-manifests.yaml
+
+      - name: Verify rendered resources
+        run: |
+          grep "kind: Deployment" rendered-manifests.yaml
+          grep "kind: StatefulSet" rendered-manifests.yaml
+          grep "kind: Service" rendered-manifests.yaml
+          grep "kind: ConfigMap" rendered-manifests.yaml
+          grep "kind: Secret" rendered-manifests.yaml
+          grep "kind: Ingress" rendered-manifests.yaml
+
+      - name: Verify CI images
+        run: |
+          grep "rrsec5/eureka-service:ci" rendered-manifests.yaml
+          grep "rrsec5/api-gateway:ci" rendered-manifests.yaml
+          grep "rrsec5/user-service:ci" rendered-manifests.yaml
+          grep "rrsec5/country-service:ci" rendered-manifests.yaml
+          grep "rrsec5/recommendation-service:ci" rendered-manifests.yaml
+          grep "rrsec5/frontend:ci" rendered-manifests.yaml
