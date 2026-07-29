@@ -1,0 +1,66 @@
+name: CD
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - feat/add-complete-ci-cd-pipeline-with-k8s
+
+jobs:
+  deploy:
+    name: Deploy to Kind
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create Kind cluster
+        uses: helm/kind-action@v1.10.0
+
+      - name: Verify Kubernetes tools
+        run: |
+          kind version
+          kubectl version --client
+          helm version
+
+      - name: Create namespace
+        run: |
+          kubectl create namespace immigration-support-system
+
+      - name: Build Docker images
+        run: |
+          docker compose build
+
+      - name: Load images into Kind
+        run: |
+          kind load docker-image rrsec5/eureka-service:ci
+          kind load docker-image rrsec5/api-gateway:ci
+          kind load docker-image rrsec5/user-service:ci
+          kind load docker-image rrsec5/country-service:ci
+          kind load docker-image rrsec5/recommendation-service:ci
+          kind load docker-image rrsec5/frontend:ci
+
+      - name: Deploy with Helm
+        run: |
+          helm install immigration-system \
+            helm/immigration-system \
+            --namespace immigration-support-system \
+            -f helm/immigration-system/values.yaml \
+            -f helm/immigration-system/values-ci.yaml \
+            -f helm/immigration-system/values-secret.example.yaml
+
+      - name: Wait for Kubernetes resources
+        run: |
+          kubectl wait \
+            --for=condition=ready pod \
+            --all \
+            --namespace immigration-support-system \
+            --timeout=300s
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n immigration-support-system
+          kubectl get services -n immigration-support-system
