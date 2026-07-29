@@ -1,0 +1,10 @@
+{{- if .Values.mysql.enabled }}
+
+{{ include "immigration-system.service" 
+(dict 
+"name" "mysql"
+"config" .Values.mysql
+"root" .
+) }}
+
+{{- end }}

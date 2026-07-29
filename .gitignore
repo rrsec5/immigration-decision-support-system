@@ -3,8 +3,14 @@
 .env.*
 !.env.example
 
+# Kubernetes old manifests
+k8s/
+
 # Kubernetes secrets
 k8s/secret.yaml
+
+#Helm secrets
+helm/immigration-system/values-secret.yaml
 
 #------------------------------------
 #             Backend
@@ -67,6 +73,7 @@ dist-ssr
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+.prettierignore
 .idea
 .DS_Store
 *.suo

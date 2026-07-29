@@ -1,0 +1,11 @@
+{{- if .Values.services.recommendationService.enabled }}
+
+{{ include "immigration-system.deployment"
+(dict
+"name" "recommendation-service"
+"config" .Values.services.recommendationService
+"root" .
+)
+}}
+
+{{- end }}

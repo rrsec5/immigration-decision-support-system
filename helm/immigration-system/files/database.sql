@@ -1,13 +1,4 @@
-apiVersion: v1
-kind: ConfigMap
-
-metadata:
-  name: mysql-init-script
-  namespace: immigration-support-system
-
-data:
-  database.sql: |
-    DROP SCHEMA IF EXISTS `immigration_decision_support` ;
+DROP SCHEMA IF EXISTS `immigration_decision_support` ;
 
     CREATE SCHEMA IF NOT EXISTS `immigration_decision_support` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
 

@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+
+metadata:
+  name: mysql-pvc
+  namespace: {{ .Values.namespace }}
+
+  labels:
+    {{- include "immigration-system.labels" . | nindent 4 }}
+
+
+spec:
+  accessModes:
+    {{- range .Values.mysql.persistence.accessModes }}
+    - {{ . }}
+    {{- end }}
+
+
+  resources:
+    requests:
+      storage: {{ .Values.mysql.persistence.size }}
+
+
+  {{- if .Values.mysql.persistence.storageClass }}
+  storageClassName: {{ .Values.mysql.persistence.storageClass }}
+  {{- end }}

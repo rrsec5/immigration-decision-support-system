@@ -1,0 +1,10 @@
+{{- if .Values.services.userService.enabled }}
+
+{{ include "immigration-system.service" 
+(dict 
+"name" "user-service"
+"config" .Values.services.userService
+"root" .
+) }}
+
+{{- end }}
